@@ -10,9 +10,9 @@
           <span>Упрости свой бизнес! Быстрый страт, удобный интерфейс</span>
           <span>длительный бесплатный период, низкая цена</span>
         </h2>
-        <button class="page__offer__start" @click="$router.push('/login')">
+        <a href="#tariffs" class="page__offer__start">
           Попробовать
-        </button>
+        </a>
       </div>
     </div>
   </div>
@@ -67,6 +67,7 @@ export default {
     }
 
     &__start {
+      display: inline-block;
       font-family: "Roboto Slab", sans-serif;
       background-color: #216a61;
       color: #fefefe;
@@ -78,6 +79,10 @@ export default {
       border: none;
       margin-top: 130px;
       box-shadow: 0 0 3px 0 #333;
+
+      &:hover {
+        text-decoration: none;
+      }
     }
   }
 }

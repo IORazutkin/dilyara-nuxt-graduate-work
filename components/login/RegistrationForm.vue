@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <form class="login__form">
+    <form class="login__form" @submit.prevent="onSubmit">
       <img src="@/assets/img/logo247x84.png" alt="logo" width="247" height="84">
       <div class="login__form__title">
         Регистрация кабинета
@@ -20,14 +20,14 @@
         </button>
       </div>
       <div class="login__form__inputs">
-        <div class="input-group">
-          <input name="name" class="field name" placeholder="Имя">
+        <div class="input-group" :class="{'error': $v.formData.fullName.$error}">
+          <input v-model="$v.formData.fullName.$model" class="field name" placeholder="Имя" @input="$v.formData.fullName.$reset">
         </div>
-        <div class="input-group">
-          <input name="email" type="email" class="field email" placeholder="Логин">
+        <div class="input-group" :class="{'error': $v.formData.username.$error}">
+          <input v-model="$v.formData.username.$model" class="field email" placeholder="Логин" @input="$v.formData.username.$reset">
         </div>
-        <div class="input-group">
-          <input name="password" type="password" class="field password" placeholder="Пароль">
+        <div class="input-group" :class="{'error': $v.formData.password.$error}">
+          <input v-model="$v.formData.password.$model" type="password" class="field password" placeholder="Пароль" @input="$v.formData.password.$reset">
         </div>
       </div>
       <div class="login__form__submit">
@@ -50,8 +50,45 @@
     </div>
   </div>
 </template>
-<script>
-export default {
+<script lang="ts">
+import { Component, Vue } from 'nuxt-property-decorator'
+import { required } from 'vuelidate/lib/validators'
+
+@Component
+export default class extends Vue {
+  formData: any = {
+    fullName: '',
+    username: '',
+    password: ''
+  }
+
+  onSubmit () {
+    this.$v.$touch()
+
+    if (this.$v.$error) {
+      return
+    }
+
+    this.$axios.$post('/api/user', this.formData).then(() => {
+      this.$router.push('/login')
+    })
+  }
+
+  validations () {
+    return {
+      formData: {
+        fullName: {
+          required
+        },
+        username: {
+          required
+        },
+        password: {
+          required
+        }
+      }
+    }
+  }
 }
 </script>
 

@@ -10,17 +10,21 @@
         </div>
       </div>
       <div class="main__header__menu">
-        <button class="icon-btn currency-btn">
+        <button class="icon-btn currency-btn" @click.stop="showPopup = 'currency'">
           &nbsp;
+          <currency-popup v-if="showPopup === 'currency'" @close="showPopup = ''" />
         </button>
-        <button class="icon-btn tip-btn">
+        <button class="icon-btn tip-btn" @click.stop="showPopup = 'tip'">
           &nbsp;
+          <tip-popup v-if="showPopup === 'tip'" @close="showPopup = ''" />
         </button>
-        <button class="icon-btn setting-btn">
+        <button class="icon-btn setting-btn" @click.stop="showPopup = 'setting'">
           &nbsp;
+          <setting-popup v-if="showPopup === 'setting'" @close="showPopup = ''" />
         </button>
-        <button class="icon-btn profile-btn">
+        <button class="icon-btn profile-btn" @click.stop="showPopup = 'profile'">
           &nbsp;
+          <profile-popup v-if="showPopup === 'profile'" @close="showPopup = ''" />
         </button>
       </div>
     </div>
@@ -29,9 +33,22 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
+import CurrencyPopup from '~/components/popups/CurrencyPopup.vue'
+import TipPopup from '~/components/popups/TipPopup.vue'
+import SettingPopup from '~/components/popups/SettingPopup.vue'
+import ProfilePopup from '~/components/popups/ProfilePopup.vue'
 
-@Component
+@Component({
+  components: {
+    ProfilePopup,
+    CurrencyPopup,
+    TipPopup,
+    SettingPopup
+  }
+})
 export default class extends Vue {
+  showPopup: string = ''
+
   get title () {
     if (this.$route.path.endsWith('dashboard')) {
       return 'Дашборд'
@@ -41,6 +58,12 @@ export default class extends Vue {
     }
     if (this.$route.path.endsWith('calc')) {
       return 'Калькулятор'
+    }
+    if (this.$route.path.endsWith('notes')) {
+      return 'Заметки'
+    }
+    if (this.$route.path.endsWith('insta')) {
+      return 'Instagram'
     }
   }
 }
@@ -54,6 +77,7 @@ export default class extends Vue {
     width: 100%;
     padding: 17px 15px 14px;
     background-color: white;
+    z-index: 10;
 
     &__wrapper {
       display: flex;
@@ -86,6 +110,7 @@ export default class extends Vue {
         background-size: 20px;
         border: none;
         height: 40px; width: 40px;
+        position: relative;
       }
 
       .icon-btn + .icon-btn {

@@ -1,6 +1,6 @@
 <template>
   <div class="login">
-    <form class="login__form">
+    <form class="login__form" @submit.prevent="onSubmit">
       <img src="@/assets/img/logo247x84.png" alt="logo" width="247" height="84">
       <div class="login__form__title">
         Вход в личный кабинет
@@ -21,18 +21,18 @@
         </button>
       </div>
       <div class="login__form__inputs">
-        <div class="input-group">
-          <input type="email" class="field email" placeholder="Логин">
+        <div class="input-group" :class="{'error': $v.formData.username.$error}">
+          <input v-model="$v.formData.username.$model" class="field email" placeholder="Логин" @input="$v.formData.username.$reset">
         </div>
-        <div class="input-group">
-          <input type="password" class="field password" placeholder="Пароль">
+        <div class="input-group" :class="{'error': $v.formData.password.$error}">
+          <input v-model="$v.formData.password.$model" type="password" class="field password" placeholder="Пароль" @input="$v.formData.password.$reset">
         </div>
       </div>
       <div class="login__form__forgot">
         <a href="#">Забыли пароль?</a>
       </div>
       <div class="login__form__submit">
-        <button class="submit-btn">
+        <button type="submit" class="submit-btn">
           Войти
         </button>
       </div>
@@ -51,8 +51,47 @@
     </div>
   </div>
 </template>
-<script>
-export default {
+<script lang="ts">
+import { Component, Vue } from 'nuxt-property-decorator'
+import { required } from 'vuelidate/lib/validators'
+import User from '~/types/User'
+
+@Component
+export default class extends Vue {
+  formData: any = {
+    username: '',
+    password: ''
+  }
+
+  onSubmit () {
+    this.$v.$touch()
+
+    if (this.$v.$error) {
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('username', this.formData.username)
+    formData.append('password', this.formData.password)
+
+    this.$axios.$post('/login', formData).then((user: User) => {
+      this.$store.commit('user/setUser', user)
+      this.$router.push('/main/dashboard')
+    })
+  }
+
+  validations () {
+    return {
+      formData: {
+        username: {
+          required
+        },
+        password: {
+          required
+        }
+      }
+    }
+  }
 }
 </script>
 

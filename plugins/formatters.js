@@ -1,22 +1,38 @@
 import Vue from 'vue'
 
-Vue.filter('formatDate', function (value, time = false) {
+Vue.filter('formatDate', function (value) {
   if (value) {
-    const date = new Date(value.replace(/-/g, '/'))
-    let day = date.getDate()
-    let month = (date.getMonth() + 1)
-    if (day < 10) {
-      day = '0' + day
-    }
-    if (month < 10) {
-      month = '0' + month
-    }
+    const date = new Date(value.split('T')[0].replace(/-/g, '/'))
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
 
-    return day + '.' + month + '.' + date.getFullYear() + (time ? ' ' + value.split(' ')[1].substr(0, 5) : '')
+    return day + '.' + month + '.' + date.getFullYear()
   }
 })
 
-Vue.filter('moneyFilter', function (value) {
+Vue.filter('dashboardDate', function (value) {
+  if (value) {
+    const date = new Date(value.split('T')[0].replace(/-/g, '/'))
+    const months = [
+      'Январь',
+      'Февраль',
+      'Март',
+      'Апрель',
+      'Май',
+      'Июнь',
+      'Июль',
+      'Август',
+      'Сентябрь',
+      'Октябрь',
+      'Ноябрь',
+      'Декабрь'
+    ]
+
+    return months[date.getMonth()] + ' ' + date.getFullYear()
+  }
+})
+
+Vue.filter('moneyFilter', function (value, isInteger = false) {
   if (value) {
     let str
     if (value.toString().includes('.')) {
@@ -26,12 +42,14 @@ Vue.filter('moneyFilter', function (value) {
     }
     let result = ''
 
-    const isFloat = str.indexOf('.')
-    if (isFloat > 0) {
-      result = ',' + str.substring(isFloat + 1)
-      str = str.slice(0, isFloat)
-    } else {
-      result = ',00'
+    if (!isInteger) {
+      const isFloat = str.indexOf('.')
+      if (isFloat > 0) {
+        result = ',' + str.substring(isFloat + 1)
+        str = str.slice(0, isFloat)
+      } else {
+        result = ',00'
+      }
     }
 
     if (str.length - 1 < 3) {

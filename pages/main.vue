@@ -22,6 +22,17 @@ import PageHeader from '~/components/main/Header.vue'
   }
 })
 export default class extends Vue {
+  head () {
+    return {
+      link: [
+        { rel: 'preload', as: 'image', href: require('~/assets/img/menu/dashboard-checked.svg') },
+        { rel: 'preload', as: 'image', href: require('~/assets/img/menu/calendar-checked.svg') },
+        { rel: 'preload', as: 'image', href: require('~/assets/img/menu/calc-checked.svg') },
+        { rel: 'preload', as: 'image', href: require('~/assets/img/menu/notes-checked.svg') },
+        { rel: 'preload', as: 'image', href: require('~/assets/img/menu/insta-checked.svg') }
+      ]
+    }
+  }
 }
 </script>
 

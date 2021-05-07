@@ -5,10 +5,10 @@
         <input type="text" placeholder="Поиск">
       </div>
       <div class="component__header__nav">
-        <button class="nav-btn active">
+        <button class="nav-btn" :class="{'active': !$route.query.type || $route.query.type === '1'}" @click="tab(1)">
           Расходы
         </button>
-        <button class="nav-btn">
+        <button class="nav-btn" :class="{'active': $route.query.type === '0'}" @click="tab(0)">
           Доходы
         </button>
       </div>
@@ -19,9 +19,9 @@
           &lt;
         </button>
         <div class="current">
-          {{ current | dateFilter }}
+          {{ isoDate | dashboardDate }}
         </div>
-        <button class="btn-arrow" @click="arrowClick(1)">
+        <button class="btn-arrow" :disabled="index === 0" @click="arrowClick(1)">
           &gt;
         </button>
       </div>
@@ -35,61 +35,64 @@
       </div>
     </div>
     <div class="component__list">
-      <calc-list-item v-for="item in list" :key="item.id" :item="item" />
+      <calc-list-item v-for="item in data" :key="item.id" :item="item" @update="$emit('update')" />
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { Operation } from '~/types/Operation'
+import CalcListItem from '~/components/calc/CalcListItem.vue'
 
 @Component({
-  filters: {
-    dateFilter (date: Date) {
-      return date.toLocaleDateString('ru', {
-        month: 'long'
-      }) + ' ' + date.getFullYear()
-    }
-  }
+  components: { CalcListItem }
 })
 export default class extends Vue {
-  today: Date = new Date()
-  current: Date = new Date()
+  @Prop() data!: Operation[]
 
-  list: any[] = [
-    {
-      id: 1,
-      comment: 'Ткань (Бифлекс) голубой ',
-      type: 'cash',
-      date: '2020-08-28',
-      amount: 4200,
-      description: '10 м. голубой бифлекс'
-    },
-    {
-      id: 2,
-      comment: 'Ткань (Бифлекс) бежевый',
-      type: 'credit-card',
-      date: '2020-08-28',
-      amount: 4200,
-      description: '10 м. бежевый бифлекс'
-    },
-    {
-      id: 3,
-      comment: 'Ткань (Бифлекс) белый',
-      type: 'card',
-      date: '2020-08-28',
-      amount: 4200,
-      description: ''
-    }
-  ]
+  index: number = parseInt(this.$route.query.index as string || '0')
+  today: Date = new Date()
 
   get totalSum () {
-    return this.list.map((item: any) => item.amount).reduce((a, b) => a + b)
+    return this.data.length && this.data.map((item: Operation) => item.sum).reduce((a, b) => a + b)
   }
 
-  arrowClick (direction: number) {
-    this.current.setDate(1)
-    this.current.setMonth(this.current.getMonth() + direction)
-    this.current = new Date(this.current)
+  get isoDate () {
+    const date = new Date(this.current)
+    date.setMonth(date.getMonth() + 1)
+
+    return date.toISOString()
+  }
+
+  get current () {
+    const date = new Date()
+    date.setDate(1)
+    date.setMonth(this.today.getMonth() + this.index)
+
+    return date
+  }
+
+  arrowClick (step: number) {
+    const query = Object.assign({}, this.$route.query)
+    query.index = (this.index + step).toString()
+    this.index += step
+
+    this.$router.replace({
+      query
+    }).then(() => {
+      this.$emit('update')
+    })
+  }
+
+  tab (type: number) {
+    const query = Object.assign({}, this.$route.query)
+    query.type = type.toString()
+
+    this.$router.replace({
+      query
+    }).then(() => {
+      this.$emit('update')
+    })
   }
 }
 </script>
@@ -101,6 +104,7 @@ export default class extends Vue {
   grid-column: 1/3;
   grid-row: 1/3;
   background-color: white;
+  border: 1px solid rgba(0, 0, 0, .3);
 
   &__header {
     display: flex;
@@ -139,6 +143,7 @@ export default class extends Vue {
 
       .active {
         border-color: #fe982a;
+        pointer-events: none;
       }
     }
   }

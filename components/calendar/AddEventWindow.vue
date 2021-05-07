@@ -1,50 +1,77 @@
 <template>
-  <div class="window">
+  <form class="window" :class="'type-' + (formData.type ? formData.type.id : -1)" @submit.prevent="submit">
     <div class="window__header">
       Добавить событие
     </div>
     <div class="window__body">
       <div class="row">
         <div class="col-12">
-          <div class="input-group">
-            <input type="date" class="field">
+          <div class="input-group" :class="{'error': $v.formData.date.$error}">
+            <input
+              v-model="$v.formData.date.$model"
+              type="date"
+              class="field"
+              @input="$v.formData.date.$reset"
+            >
           </div>
-          <div class="input-group">
-            <input class="field no-icon" placeholder="Введите событие">
+          <div class="input-group" :class="{'error': $v.formData.event.$error}">
+            <input
+              v-model="$v.formData.event.$model"
+              class="field no-icon"
+              placeholder="Введите событие"
+              @input="$v.formData.event.$reset"
+            >
           </div>
-          <div class="input-group">
-            <v-select />
+          <div class="input-group" :class="{'error': $v.formData.type.$error}">
+            <v-select
+              v-model="$v.formData.type.$model"
+              placeholder="Категория пометки"
+              :options="typeList"
+              :searchable="false"
+              @input="$v.formData.type.$reset"
+            />
           </div>
-          <div class="input-group">
-            <input class="field comment" placeholder="Комментарий">
+          <div class="input-group" :class="{'error': $v.formData.comment.$error}">
+            <input
+              v-model="$v.formData.comment.$model"
+              class="field comment"
+              placeholder="Комментарий"
+              @input="$v.formData.comment.$reset"
+            >
           </div>
-          <div class="input-group">
-            <input class="field" placeholder="Введите описание события (до 50 символов)">
+          <div class="input-group" :class="{'error': $v.formData.description.$error}">
+            <input
+              v-model="$v.formData.description.$model"
+              class="field"
+              placeholder="Введите описание события (до 50 символов)"
+              @input="$v.formData.description.$reset"
+            >
           </div>
         </div>
       </div>
       <div class="window__body__actions">
-        <button class="action-btn btn-cancel">
+        <button type="button" class="action-btn btn-cancel" @click="reset">
           Отмена
         </button>
-        <button class="action-btn btn-save">
+        <button type="submit" class="action-btn btn-save">
           Добавить
         </button>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component } from 'nuxt-property-decorator'
 import vSelect from 'vue-select'
+import MarkWindow from '~/classes/MarkWindow'
 
 @Component({
   components: {
     vSelect
   }
 })
-export default class extends Vue {
+export default class extends MarkWindow {
 }
 </script>
 
@@ -64,12 +91,17 @@ export default class extends Vue {
     padding: 25px 0 18px 25px;
     text-transform: uppercase;
     color: rgba(1, 0, 0, .7);
+
+    border: 1px solid rgba(0, 0, 0, .3);
+    border-bottom: none;
   }
 
   &__body {
     padding: 35px 25px;
     position: relative;
     flex-grow: 1;
+    border: 1px solid rgba(0, 0, 0, .3);
+    border-top: none;
 
     .field {
       border: 1px solid rgba(0, 0, 0, .2);
@@ -124,6 +156,42 @@ export default class extends Vue {
       .action-btn + .action-btn {
         margin-left: 12px;
       }
+    }
+  }
+
+  &.type-0 {
+    .window__header {
+      background-color: #216a61;
+      color: white;
+      border: none;
+    }
+
+    .btn-save {
+      background-color: #216a61;
+      color: white;
+    }
+
+    .field::-webkit-calendar-picker-indicator {
+      background-color: #216a61;
+      background-image: url(~@/assets/img/fields/calendar-white.png);
+    }
+  }
+
+  &.type-1 {
+    .window__header {
+      background-color: #fe982a;
+      color: white;
+      border: none;
+    }
+
+    .btn-save {
+      background-color: #fe982a;
+      color: white;
+    }
+
+    .field::-webkit-calendar-picker-indicator {
+      background-color: #fe982a;
+      background-image: url(~@/assets/img/fields/calendar-white.png);
     }
   }
 }

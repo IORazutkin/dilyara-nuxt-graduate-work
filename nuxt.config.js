@@ -15,11 +15,10 @@ export default {
       { rel: 'preconnect', href: 'https://fonts.gstatic.com' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Roboto+Slab:wght@400;700&display=swap' }
+    ],
+    script: [
+      { src: 'https://www.gstatic.com/charts/loader.js' }
     ]
-  },
-
-  env: {
-    API_ENDPOINT: 'http://localhost:8080'
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -29,10 +28,11 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/axios',
     '~/plugins/vuelidate',
     '~/plugins/formatters',
-    '~/plugins/event-bus'
-    // '~/plugins/axios'
+    '~/plugins/event-bus',
+    '~/plugins/chart.client'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -45,8 +45,7 @@ export default {
 
   modules: [
     '@nuxtjs/axios',
-    '@nuxtjs/style-resources',
-    'nuxt-babel'
+    '@nuxtjs/style-resources'
   ],
 
   styleResources: {
@@ -54,6 +53,11 @@ export default {
       '~/assets/scss/_mixins.scss',
       '~/assets/scss/_style_resources.scss'
     ]
+  },
+
+  axios: {
+    credentials: true,
+    baseUrl: 'https://localhost:8443'
   },
 
   server: {

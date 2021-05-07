@@ -2,35 +2,35 @@
   <div class="main__menu">
     <button
       class="main__menu__item dashboard-item"
-      :class="{'active': $route.fullPath.endsWith('dashboard')}"
+      :class="{'active': $route.path.endsWith('dashboard')}"
       @click="$router.push('/main/dashboard')"
     >
       &nbsp;
     </button>
     <button
       class="main__menu__item calendar-item"
-      :class="{'active': $route.fullPath.endsWith('calendar')}"
+      :class="{'active': $route.path.endsWith('calendar')}"
       @click="$router.push('/main/calendar')"
     >
       &nbsp;
     </button>
     <button
       class="main__menu__item calc-item"
-      :class="{'active': $route.fullPath.endsWith('calc')}"
+      :class="{'active': $route.path.endsWith('calc')}"
       @click="$router.push('/main/calc')"
     >
       &nbsp;
     </button>
     <button
       class="main__menu__item notes-item"
-      :class="{'active': $route.fullPath.endsWith('notes')}"
+      :class="{'active': $route.path.endsWith('notes')}"
       @click="$router.push('/main/notes')"
     >
       &nbsp;
     </button>
     <button
       class="main__menu__item insta-item"
-      :class="{'active': $route.fullPath.endsWith('insta')}"
+      :class="{'active': $route.path.endsWith('insta')}"
       @click="$router.push('/main/insta')"
     >
       &nbsp;
@@ -64,33 +64,49 @@ export default {
         background-color: rgba(0, 106, 96, .05);
       }
 
-      &.active {
-        background-color: rgba(0, 106, 96, .1);
-      }
-
       &.dashboard-item {
-        background-image: url(~@/assets/img/menu/dashboard.png);
+        background-image: url(~@/assets/img/menu/dashboard.svg);
         background-size: 31px;
+
+        &.active {
+          background-image: url(~@/assets/img/menu/dashboard-checked.svg);
+        }
       }
 
       &.calendar-item {
-        background-image: url(~@/assets/img/menu/calendar.png);
+        background-image: url(~@/assets/img/menu/calendar.svg);
         background-size: 30px;
+
+        &.active {
+          background-image: url(~@/assets/img/menu/calendar-checked.svg);
+        }
       }
 
       &.calc-item {
-        background-image: url(~@/assets/img/menu/calc.png);
-        background-size: 27px;
+        background-image: url(~@/assets/img/menu/calc.svg);
+        background-size: 30px;
+
+        &.active {
+          background-image: url(~@/assets/img/menu/calc-checked.svg);
+        }
       }
 
       &.notes-item {
-        background-image: url(~@/assets/img/menu/notes.png);
+        background-image: url(~@/assets/img/menu/notes.svg);
         background-size: 31px;
+
+        &.active {
+          background-image: url(~@/assets/img/menu/notes-checked.svg);
+        }
       }
 
       &.insta-item {
-        background-image: url(~@/assets/img/menu/insta.png);
+        background-image: url(~@/assets/img/menu/insta.svg);
         background-size: 29px;
+
+        &.active {
+          background-image: url(~@/assets/img/menu/insta-checked.svg);
+        }
       }
     }
   }

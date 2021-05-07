@@ -8,28 +8,22 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { CostStat } from '~/types/CostStat'
 
 @Component
 export default class extends Vue {
+  @Prop() data!: CostStat[]
+
   mounted () {
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    google.charts.load('current', { packages: ['corechart'] })
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    google.charts.setOnLoadCallback(this.drawHistogram)
+    this.$chart.charts.load('current', { packages: ['corechart'] })
+    this.$chart.charts.setOnLoadCallback(this.drawHistogram)
   }
 
   drawHistogram () {
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    const data = google.visualization.arrayToDataTable([
+    const data = this.$chart.visualization.arrayToDataTable([
       ['Тип', 'Расход'],
-      ['Доставка товара', 10000],
-      ['Бирки', 9000],
-      ['Пакеты', 12000],
-      ['Ткани', 5000]
+      ...this.data.map((item: CostStat) => [item.title, item.value])
     ])
 
     const options = {
@@ -42,9 +36,8 @@ export default class extends Vue {
         bottom: 40
       }
     }
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    const chart = new google.visualization.PieChart(document.getElementById('cost-diagram'))
+
+    const chart = new this.$chart.visualization.PieChart(document.getElementById('cost-diagram'))
     chart.draw(data, options)
   }
 }
@@ -56,6 +49,7 @@ export default class extends Vue {
   background-color: white;
   display: flex;
   flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, .3);
 
   &__header {
     border-bottom: 1px solid rgba(0, 0, 0, .2);

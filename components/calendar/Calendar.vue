@@ -1,15 +1,12 @@
 <template>
   <div class="user-calendar">
     <div class="user-calendar__header">
-      <div class="user-calendar__header__search">
-        <input type="text" placeholder="Поиск">
-      </div>
       <div class="user-calendar__header__nav">
         <button class="btn-arrow" @click="arrowClick(-1)">
           &lt;
         </button>
         <div class="current">
-          {{ current | dateFilter }}
+          {{ isoDate | dashboardDate }}
         </div>
         <button class="btn-arrow" @click="arrowClick(1)">
           &gt;
@@ -39,7 +36,13 @@
         <div class="table-item table-title">
           Воскресенье
         </div>
-        <div v-for="i in calendarList" :key="i.type + i.date" :class="i.type" class="table-item">
+        <div
+          v-for="i in calendarList"
+          :key="i.visible + i.date"
+          :class="{[i.visible]: true, 'selected': selected === i.iso, ['type-' + i.type]: true}"
+          class="table-item"
+          @click="itemClick(i)"
+        >
           {{ i.date }}
         </div>
       </div>
@@ -48,47 +51,65 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { Mark } from '~/types/Mark'
 
-@Component({
-  filters: {
-    dateFilter (date: Date) {
-      return date.toLocaleDateString('ru', {
-        month: 'long'
-      }) + ' ' + date.getFullYear()
-    }
-  }
-})
+@Component
 export default class extends Vue {
-  today: Date = new Date()
-  current: Date = new Date()
+  @Prop() marks!: Mark[]
+
+  index: number = parseInt(this.$route.query.index as string || '0')
+  selected: string = ''
+
+  get isoDate () {
+    const date = new Date(this.current)
+    date.setMonth(date.getMonth() + 1)
+
+    return date.toISOString()
+  }
+
+  get current () {
+    const date: Date = new Date()
+    date.setDate(1)
+    date.setMonth(date.getMonth() + this.index)
+
+    return date
+  }
 
   get calendarList () {
     const result = []
-    const first: Date = new Date(this.current)
-    first.setDate(1)
+    const first: Date = this.current
 
     const date = new Date(first)
     for (let i = first.getDay() || 7; i > 1; i--) {
       date.setDate(date.getDate() - 1)
       result.unshift({
-        type: 'hide',
+        visible: 'hide',
         date: date.getDate()
       })
     }
 
     const iter = new Date(first)
     while (iter.getMonth() === first.getMonth()) {
-      result.push({
-        type: 'show',
-        date: iter.getDate()
-      })
+      const iso = first.getFullYear() + '-' + (first.getMonth() + 1).toString().padStart(2, '0') + '-' + iter.getDate().toString().padStart(2, '0')
+      const mark = this.marks.find((item: Mark) => item.date === iso)
+      const dateBody: any = {
+        visible: 'show',
+        date: iter.getDate(),
+        iso
+      }
+
+      if (mark) {
+        dateBody.type = mark.type
+      }
+
+      result.push(dateBody)
       iter.setDate(iter.getDate() + 1)
     }
 
     for (let i = iter.getDay(); i >= 0 && i !== 1 && i < 8; i++) {
       result.push({
-        type: 'hide',
+        visible: 'hide',
         date: iter.getDate()
       })
       iter.setDate(iter.getDate() + 1)
@@ -97,10 +118,22 @@ export default class extends Vue {
     return result
   }
 
+  itemClick (dateItem: any) {
+    this.selected = dateItem.iso
+    const mark = this.marks.find((item: Mark) => item.date === dateItem.iso)
+    this.$eventBus.$emit('SelectDate', mark || dateItem.iso)
+  }
+
   arrowClick (direction: number) {
-    this.current.setDate(1)
-    this.current.setMonth(this.current.getMonth() + direction)
-    this.current = new Date(this.current)
+    this.index += direction
+    const query = Object.assign({}, this.$route.query)
+    query.index = this.index.toString()
+
+    this.$router.replace({
+      query
+    }).then(() => {
+      this.$emit('update')
+    })
   }
 }
 </script>
@@ -113,6 +146,7 @@ export default class extends Vue {
   grid-column: 1/3;
   grid-row: 1/3;
   background-color: white;
+  border: 1px solid rgba(0, 0, 0, .3);
 
   &__header {
     display: flex;
@@ -180,7 +214,7 @@ export default class extends Vue {
         cursor: pointer;
 
         &:hover {
-          background-color: #f0f0f0;
+          opacity: .7;
         }
       }
 
@@ -188,10 +222,25 @@ export default class extends Vue {
         color: rgba(0, 0, 0, .3);
         background-color: #fafafa;
         cursor: default;
+        pointer-events: none;
 
         &:hover {
-          background-color: #fafafa;
+          opacity: 1;
         }
+      }
+
+      .type-0 {
+        background-color: #216a61;
+        color: white;
+      }
+
+      .type-1 {
+        background-color: #fe982a;
+        color: white;
+      }
+
+      .selected {
+        border: 2px solid #005590;
       }
 
       .table-title {

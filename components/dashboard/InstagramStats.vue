@@ -4,19 +4,11 @@
       <div class="component__header__title">
         Статистика инстаграмм
       </div>
-      <div class="component__header__nav">
-        <div class="today">
-          Сегодня
-        </div>
-        <div class="calendar">
-          <input value="2020-12-08" type="date">
-        </div>
-      </div>
     </div>
     <div class="component__body">
       <div class="component__body__list">
         <div v-for="item in list" :key="item.title" class="item">
-          <div class="item-title">
+          <div v-if="item.title" class="item-title">
             {{ item.title }}
           </div>
           <div v-for="subItem in item.subItems" :key="subItem.title" class="sub-item">
@@ -34,38 +26,37 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { InstagramStat } from '~/types/InstagramStat'
 
 @Component
 export default class extends Vue {
+  @Prop() data!: InstagramStat
+
   list: any = [
     {
-      title: 'Охваченные аккаунты',
       subItems: [
-        { title: 'Охват продвигаемых публикаций', count: 1140 },
-        { title: 'Посещение профиля', count: 1120 },
-        { title: 'Нажатие на кнопку «Эл. письмо»', count: 100 }
+        { title: 'Публикации', count: this.data.page.mediaCount },
+        { title: 'Подписчики', count: this.data.page.followersCount },
+        { title: 'Подписки', count: this.data.page.followsCount }
       ]
     },
     {
-      title: 'Взаимодействия с контентом',
+      title: 'Города подписчиков',
       subItems: [
-        { title: 'Взаимодействие с историей', count: 11200 },
-        { title: 'Взаимодействие с публикацией', count: 1700 }
+        ...Object.entries(this.data.audience.audienceCity).map(([key, value]) => ({
+          title: key,
+          count: value
+        })).sort((a, b) => b.count - a.count)
       ]
     },
     {
-      title: 'Промоакции',
+      title: 'Распределение подписчиков по возрасту и полу',
       subItems: [
-        { title: 'Активные промоакции', count: 4 }
-      ]
-    },
-    {
-      title: 'Подписчики',
-      subItems: [
-        { title: 'Всего подписчиков', count: 1100 },
-        { title: 'Новые подписчики', count: 14 },
-        { title: 'Отмена подписки', count: 2 }
+        ...Object.entries(this.data.audience.audienceGenderAge).map(([key, value]) => ({
+          title: key.replace('M.', 'М ').replace('F.', 'Ж '),
+          count: value
+        })).sort((a, b) => b.count - a.count)
       ]
     }
   ]
@@ -80,44 +71,20 @@ export default class extends Vue {
   flex-direction: column;
   overflow: auto;
   min-width: 400px;
+  border: 1px solid rgba(0, 0, 0, .3);
 
   &__header {
     border-bottom: 1px solid rgba(0, 0, 0, .2);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 16px;
 
     &__title {
       font-family: "Roboto Slab", sans-serif;
       color: rgba(0, 0, 0, .7);
       font-size: 12px;
       line-height: 48px;
-    }
-
-    &__nav {
-      display: flex;
-
-      .today {
-        font-size: 12px; line-height: 20px;
-        font-family: "Roboto Slab", sans-serif;
-        margin-right: 12px;
-        color: rgba(0, 0, 0, .7);
-      }
-
-      .calendar input[type="date"] {
-        background-color: transparent;
-        border: 0;
-        width: 64px;
-        font-family: "Roboto Slab", sans-serif;
-        font-size: 12px;
-        display: block;
-        padding: 0;
-        height: 100%;
-        color: rgba(0, 0, 0, .7);
-        outline: none;
-
-        &::-webkit-calendar-picker-indicator { display: none }
-      }
     }
   }
 

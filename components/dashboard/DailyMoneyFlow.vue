@@ -5,10 +5,10 @@
         График денежного потока (доходы-расходы)
       </div>
       <div class="component__header__nav">
-        <button class="btn-arrow">
+        <button class="btn-arrow" @click="step(-1)">
           &lt;
         </button>
-        <button class="btn-arrow">
+        <button class="btn-arrow" :disabled="index === 0" @click="step(1)">
           &gt;
         </button>
       </div>
@@ -18,30 +18,34 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { MoneyFlow } from '~/types/MoneyFlow'
 
 @Component
 export default class extends Vue {
+  @Prop() index!: number
+  @Prop() data!: MoneyFlow[]
+
   mounted () {
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    google.charts.load('current', { packages: ['corechart'] })
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    google.charts.setOnLoadCallback(this.drawHistogram)
+    this.$chart.charts.load('current', { packages: ['corechart'] })
+    this.$chart.charts.setOnLoadCallback(this.drawHistogram)
+  }
+
+  step (step: number) {
+    const query = Object.assign({}, this.$route.query)
+    query.index = (this.index + step).toString()
+
+    this.$router.replace({
+      query
+    }).then(() => {
+      this.$emit('step', this.drawHistogram)
+    })
   }
 
   drawHistogram () {
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    const data = google.visualization.arrayToDataTable([
+    const data = this.$chart.visualization.arrayToDataTable([
       ['Месяц', 'Доход', 'Расход'],
-      ['Сентябрь 19', 10000, 8000],
-      ['Октябрь 19', 9000, 8500],
-      ['Ноябрь 19', 12000, 10000],
-      ['Декабрь 19', 5000, 13000],
-      ['Январь 20', 9000, 10500],
-      ['Февраль 20', 12000, 10000]
+      ...this.data.map((item: MoneyFlow) => [(this.$options.filters as any).dashboardDate(item.date), item.profit, item.cost])
     ])
 
     const options = {
@@ -59,9 +63,8 @@ export default class extends Vue {
       hAxis: { textColor: '#464646' },
       vAxis: { textColor: '#464646' }
     }
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    const chart = new google.visualization.ColumnChart(document.getElementById('daily-flow'))
+
+    const chart = new this.$chart.visualization.ColumnChart(document.getElementById('daily-flow'))
     chart.draw(data, options)
   }
 }
@@ -74,6 +77,7 @@ export default class extends Vue {
   grid-column: 1/4;
   display: flex;
   flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, .3);
 
   &__header {
     border-bottom: 1px solid rgba(0, 0, 0, .2);

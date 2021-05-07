@@ -1,68 +1,113 @@
 <template>
-  <div class="window">
+  <form class="window" @submit.prevent="save">
     <div class="window__header">
       Расходы
     </div>
     <div class="window__body">
       <div class="row">
-        <div class="col-6">
-          <div class="input-group">
-            <input type="date" class="field">
+        <div class="col-6 mb-3">
+          <div class="input-group" :class="{'error': $v.formData.date.$error}">
+            <input
+              v-model="$v.formData.date.$model"
+              type="date"
+              class="field"
+              @input="$v.formData.date.$reset"
+            >
           </div>
-          <div class="input-group">
-            <input class="field no-icon" placeholder="Введите событие">
-          </div>
-          <div class="input-group">
-            <v-select />
+        </div>
+        <div class="col-6 mb-3">
+          <div class="input-group" :class="{'error': $v.formData.category.$error}">
+            <v-select
+              v-model="$v.formData.category.$model"
+              :options="categories"
+              label="string"
+              placeholder="Категория расхода"
+              @search="search"
+              @input="$v.formData.category.$reset"
+            >
+              <template #no-options>
+                Совпадений не найдено
+              </template>
+            </v-select>
           </div>
         </div>
         <div class="col-6">
-          <fieldset class="input-group">
-            <div class="input-group">
-              <input id="cost" type="checkbox">
-              <label for="cost">
-                Учесть в бюджете
-              </label>
-            </div>
-            <div class="input-group mt-2">
-              <v-select />
-            </div>
-          </fieldset>
-          <div class="input-group">
-            <input type="number" class="field" placeholder="Сумма">
+          <div class="input-group" :class="{'error': $v.formData.paymentType.$error}">
+            <v-select
+              v-model="$v.formData.paymentType.$model"
+              :searchable="false"
+              :options="paymentTypes"
+              label="string"
+              placeholder="Способ оплаты"
+              @input="$v.formData.paymentType.$reset"
+            />
+          </div>
+        </div>
+        <div class="col-6">
+          <!--          <fieldset class="input-group">-->
+          <!--            <div class="input-group">-->
+          <!--              <input id="cost" type="checkbox">-->
+          <!--              <label for="cost">-->
+          <!--                Учесть в бюджете-->
+          <!--              </label>-->
+          <!--            </div>-->
+          <!--            <div class="input-group mt-2">-->
+          <!--              <v-select />-->
+          <!--            </div>-->
+          <!--          </fieldset>-->
+          <div class="input-group" :class="{'error': $v.formData.sum.$error}">
+            <input
+              v-model="$v.formData.sum.$model"
+              type="number"
+              class="field"
+              placeholder="Сумма"
+              @input="$v.formData.sum.$reset"
+            >
           </div>
         </div>
         <div class="col-12 mt-3">
-          <div class="input-group">
-            <input class="field comment" placeholder="Комментарий">
+          <div class="input-group" :class="{'error': $v.formData.comment.$error}">
+            <input
+              v-model="$v.formData.comment.$model"
+              class="field comment"
+              placeholder="Комментарий"
+              @input="$v.formData.comment.$reset"
+            >
           </div>
-          <div class="input-group">
-            <input class="field" placeholder="Введите описание события (до 50 символов)">
+          <div class="input-group" :class="{'error': $v.formData.description.$error}">
+            <input
+              v-model="$v.formData.description.$model"
+              class="field"
+              placeholder="Введите описание события (до 50 символов)"
+              @input="$v.formData.description.$reset"
+            >
           </div>
         </div>
       </div>
       <div class="window__body__actions">
-        <button class="action-btn btn-cancel">
+        <button type="button" class="action-btn btn-cancel" @click="reset">
           Отмена
         </button>
-        <button class="action-btn btn-save">
+        <button type="submit" class="action-btn btn-save">
           Сохранить
         </button>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component } from 'nuxt-property-decorator'
 import vSelect from 'vue-select'
+import CalcWindow from '~/classes/CalcWindow'
 
 @Component({
   components: {
     vSelect
   }
 })
-export default class extends Vue {
+export default class extends CalcWindow {
+  type: number = 1
 }
 </script>
 
@@ -88,34 +133,8 @@ export default class extends Vue {
     padding: 35px 25px;
     position: relative;
     flex-grow: 1;
-
-    .field {
-      border: 1px solid rgba(0, 0, 0, .2);
-      border-radius: 3px;
-      background-color: white;
-      height: 34px;
-      padding: 0 8px;
-      font-family: "Roboto Slab", sans-serif;
-      font-size: 10px;
-      color: rgba(0, 0, 0, .7);
-
-      &::-webkit-calendar-picker-indicator {
-        height: 32px; width: 32px;
-        padding: 0;
-        margin-right: -8px;
-        border-radius: 0 3px 3px 0;
-        background: #fe982a url(~@/assets/img/fields/calendar-white.png) no-repeat center/20px;
-        cursor: pointer;
-      }
-    }
-
-    .field.comment {
-      border: none;
-      border-bottom: 1px solid rgba(0, 0, 0, .2);
-      border-radius: 0;
-      background: white url(~@/assets/img/fields/comment.png) no-repeat center left 8px;
-      padding-left: 37px;
-    }
+    border: 1px solid rgba(0, 0, 0, .3);
+    border-top: none;
 
     &__actions {
       position: absolute;
@@ -145,5 +164,41 @@ export default class extends Vue {
       }
     }
   }
+}
+
+.field {
+  border: 1px solid rgba(0, 0, 0, .2);
+  border-radius: 3px;
+  background-color: white;
+  height: 34px;
+  padding: 0 8px;
+  font-family: "Roboto Slab", sans-serif;
+  font-size: 10px;
+  color: rgba(0, 0, 0, .7);
+
+  &::-webkit-calendar-picker-indicator {
+    height: 32px; width: 32px;
+    padding: 0;
+    margin-right: -8px;
+    border-radius: 0 3px 3px 0;
+    background: #fe982a url(~@/assets/img/fields/calendar-white.png) no-repeat center/20px;
+    cursor: pointer;
+  }
+}
+
+.field.comment {
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, .2);
+  border-radius: 0;
+  background: white url(~@/assets/img/fields/comment.png) no-repeat center left 8px;
+  padding-left: 37px;
+}
+
+.col-6:nth-of-type(2n) {
+  padding-left: 8px;
+}
+
+.col-6:nth-of-type(2n - 1) {
+  padding-right: 8px;
 }
 </style>

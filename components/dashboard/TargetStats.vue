@@ -5,10 +5,13 @@
         Статистика таргета
       </div>
       <div class="component__header__nav">
-        <button class="btn-arrow">
+        <div class="component__header__date">
+          {{ rangeDate(0) }} - {{ rangeDate(6) }}
+        </div>
+        <button class="btn-arrow" @click="step(-1)">
           &lt;
         </button>
-        <button class="btn-arrow">
+        <button class="btn-arrow" :disabled="index === 0" @click="step(1)">
           &gt;
         </button>
       </div>
@@ -18,31 +21,31 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
+import { InstagramTarget } from '~/types/InstagramTarget'
 
 @Component
 export default class extends Vue {
+  @Prop() index!: number
+  @Prop() data!: InstagramTarget[]
+
+  rangeDate (shift: number = 0) {
+    const date = new Date(this.data[0].date.split('T')[0])
+    date.setDate(date.getDate() + shift)
+    return date.getDate().toString().padStart(2, '0') + '.' + (date.getMonth() + 1).toString().padStart(2, '0')
+  }
+
   mounted () {
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    google.charts.load('current', { packages: ['corechart'] })
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    google.charts.setOnLoadCallback(this.drawHistogram)
+    this.$chart.charts.load('current', { packages: ['corechart'] })
+    this.$chart.charts.setOnLoadCallback(this.drawHistogram)
   }
 
   drawHistogram () {
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    const data = google.visualization.arrayToDataTable([
+    const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+    const weekData = Object.assign(new Array(7).fill({}), this.data)
+    const data = this.$chart.visualization.arrayToDataTable([
       ['День недели', 'Таргет'],
-      ['Пн', 176],
-      ['Вт', 324],
-      ['Ср', 225],
-      ['Чт', 367],
-      ['Пт', 254],
-      ['Сб', 209],
-      ['Вс', 276]
+      ...weekData.map((item: any, index: number) => [weekDays[index], item.value || 0])
     ])
 
     const options = {
@@ -60,10 +63,20 @@ export default class extends Vue {
       hAxis: { textColor: '#464646' },
       vAxis: { textColor: '#464646' }
     }
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    const chart = new google.visualization.ColumnChart(document.getElementById('target-diagram'))
+
+    const chart = new this.$chart.visualization.ColumnChart(document.getElementById('target-diagram'))
     chart.draw(data, options)
+  }
+
+  step (step: number) {
+    const query = Object.assign({}, this.$route.query)
+    query.target = (this.index + step).toString()
+
+    this.$router.replace({
+      query
+    }).then(() => {
+      this.$emit('step', this.drawHistogram)
+    })
   }
 }
 </script>
@@ -74,6 +87,7 @@ export default class extends Vue {
   background-color: white;
   display: flex;
   flex-direction: column;
+  border: 1px solid rgba(0, 0, 0, .3);
 
   &__header {
     border-bottom: 1px solid rgba(0, 0, 0, .2);
@@ -86,6 +100,13 @@ export default class extends Vue {
       color: rgba(0, 0, 0, .7);
       font-size: 12px;
       line-height: 48px;
+    }
+
+    &__date {
+      line-height: 28px;
+      font-size: 12px;
+      font-family: "Roboto Slab", sans-serif;
+      margin-right: 8px;
     }
 
     &__nav {

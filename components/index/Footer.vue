@@ -17,7 +17,7 @@ export default {
 .page {
   &__footer {
     height: 110px;
-    background-color: #f0f0f0;
+    background-color: white;
     padding-top: 30px;
 
     &__copyright {

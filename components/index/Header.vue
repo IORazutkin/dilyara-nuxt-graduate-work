@@ -10,6 +10,7 @@
           <a href="#target" :class="{'checked': hash === '#target'}">Цель</a>
           <a href="#features" :class="{'checked': hash === '#features'}">Ресурсы</a>
           <a href="#view" :class="{'checked': hash === '#view'}">Вид</a>
+          <a href="#tariffs" :class="{'checked': hash === '#tariffs'}">Тарифы</a>
           <nuxt-link to="/login">
             Войти
           </nuxt-link>
@@ -31,8 +32,7 @@ export default class extends Vue {
     this.$forceUpdate()
     this.$eventBus.$on('AnchorTrigger', (id: string) => {
       if (window.location.hash !== '#' + id) {
-        // this.$router.replace('/#' + id)
-        history.pushState(
+        history.replaceState(
           {},
           '',
           this.$route.path + '#' + id

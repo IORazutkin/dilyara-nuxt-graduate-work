@@ -9,6 +9,8 @@
     <page-features />
     <anchor id="view" />
     <page-view />
+    <anchor id="tariffs" />
+    <tariffs />
     <page-footer />
   </div>
 </template>
@@ -22,9 +24,11 @@ import PageFeatures from '~/components/index/Features.vue'
 import PageView from '~/components/index/View.vue'
 import PageFooter from '~/components/index/Footer.vue'
 import Anchor from '~/components/Anchor.vue'
+import Tariffs from '~/components/index/Tariffs.vue'
 
 @Component({
   components: {
+    Tariffs,
     Anchor,
     PageHeader,
     PageOffer,
