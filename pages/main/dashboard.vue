@@ -59,7 +59,7 @@ export default class extends Vue {
   }
 
   async fetchTarget () {
-    this.instagramTarget = await this.$axios.$get('/api/facebook/target?index=' + this.target)
+    this.instagramTarget = (await this.$axios.$get('/api/facebook/target?index=' + this.target)) || []
   }
 }
 </script>

@@ -45,6 +45,7 @@ export default class extends Vue {
   justify-content: center;
   align-items: center;
   cursor: default;
+  z-index: 99999;
 }
 
 .popup {

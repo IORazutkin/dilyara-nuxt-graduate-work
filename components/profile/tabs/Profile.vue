@@ -44,7 +44,7 @@
         <button type="submit" class="action-btn btn-save">
           Сохранить
         </button>
-        <button class="action-btn" @click="isPopupShow = true">
+        <button type="button" class="action-btn" @click="isPopupShow = true">
           Сменить пароль
         </button>
       </div>

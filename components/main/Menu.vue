@@ -46,6 +46,10 @@ export default {
 <style lang="scss" scoped>
 .main {
   &__menu {
+    position: fixed;
+    left: 0; top: 76px;
+    height: 100%;
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     align-items: stretch;

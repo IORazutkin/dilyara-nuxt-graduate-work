@@ -109,9 +109,10 @@ export default class extends Vue {
 .page {
   &__features {
     background-color: #f0f0f0;
-    height: calc(100vh - 57px);
+    min-height: calc(100vh - 57px);
     display: flex;
     align-items: center;
+    padding: 50px 0;
 
     &__wrapper {
       display: grid;

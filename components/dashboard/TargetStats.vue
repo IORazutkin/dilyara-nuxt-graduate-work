@@ -30,7 +30,7 @@ export default class extends Vue {
   @Prop() data!: InstagramTarget[]
 
   rangeDate (shift: number = 0) {
-    const date = new Date(this.data[0].date.split('T')[0])
+    const date = this.data[0] ? new Date(this.data[0].date.split('T')[0]) : new Date()
     date.setDate(date.getDate() + shift)
     return date.getDate().toString().padStart(2, '0') + '.' + (date.getMonth() + 1).toString().padStart(2, '0')
   }

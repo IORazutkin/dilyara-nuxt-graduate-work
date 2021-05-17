@@ -27,10 +27,13 @@ export default {
 .page {
   &__offer {
     margin-top: 57px;
-    height: calc(100vh - 57px);
+    min-height: calc(100vh - 57px);
     background: url(~@/assets/img/laptop-background.png) no-repeat center/cover;
-    padding-top: 300px;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 0;
 
     &__title {
       color: white;

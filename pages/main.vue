@@ -53,6 +53,7 @@ export default class extends Vue {
       display: flex;
       align-items: stretch;
       flex-grow: 1;
+      padding-left: 90px;
     }
   }
 }

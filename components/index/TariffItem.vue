@@ -49,7 +49,7 @@ export default class extends Vue {
 
   &__body {
     border-top: 2px solid white;
-    padding: 22px 14px 0;
+    padding: 22px 14px 22px;
     font-size: 18px;
     flex-grow: 1;
 

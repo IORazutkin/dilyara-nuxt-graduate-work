@@ -103,7 +103,7 @@ export default class extends Vue {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding: 75px;
+    padding: 24px;
 
     &__title {
       color: #216a61;
@@ -159,7 +159,7 @@ export default class extends Vue {
       width: 100%;
 
       .input-group + .input-group {
-        margin-top: 40px;
+        margin-top: 24px;
       }
 
       .field.name {

@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="component__body">
-      <div class="component__body__list">
+      <div v-if="data.page && data.audience" class="component__body__list">
         <div v-for="item in list" :key="item.title" class="item">
           <div v-if="item.title" class="item-title">
             {{ item.title }}
@@ -20,6 +20,9 @@
             </div>
           </div>
         </div>
+      </div>
+      <div v-else class="component__body__empty">
+        Статистика пуста
       </div>
     </div>
   </div>
@@ -35,29 +38,35 @@ export default class extends Vue {
 
   list: any = [
     {
-      subItems: [
-        { title: 'Публикации', count: this.data.page.mediaCount },
-        { title: 'Подписчики', count: this.data.page.followersCount },
-        { title: 'Подписки', count: this.data.page.followsCount }
-      ]
+      subItems: this.data.page
+        ? [
+            { title: 'Публикации', count: this.data.page.mediaCount },
+            { title: 'Подписчики', count: this.data.page.followersCount },
+            { title: 'Подписки', count: this.data.page.followsCount }
+          ]
+        : []
     },
     {
       title: 'Города подписчиков',
-      subItems: [
-        ...Object.entries(this.data.audience.audienceCity).map(([key, value]) => ({
-          title: key,
-          count: value
-        })).sort((a, b) => b.count - a.count)
-      ]
+      subItems: this.data.audience
+        ? [
+            ...Object.entries(this.data.audience.audienceCity).map(([key, value]) => ({
+              title: key,
+              count: value
+            })).sort((a, b) => b.count - a.count)
+          ]
+        : []
     },
     {
       title: 'Распределение подписчиков по возрасту и полу',
-      subItems: [
-        ...Object.entries(this.data.audience.audienceGenderAge).map(([key, value]) => ({
-          title: key.replace('M.', 'М ').replace('F.', 'Ж '),
-          count: value
-        })).sort((a, b) => b.count - a.count)
-      ]
+      subItems: this.data.audience
+        ? [
+            ...Object.entries(this.data.audience.audienceGenderAge).map(([key, value]) => ({
+              title: key.replace('M.', 'М ').replace('F.', 'Ж '),
+              count: value
+            })).sort((a, b) => b.count - a.count)
+          ]
+        : []
     }
   ]
 }
@@ -111,6 +120,12 @@ export default class extends Vue {
       .sub-item + .sub-item {
         margin-top: 8px;
       }
+    }
+
+    &__empty {
+      text-align: center;
+      font-size: 12px;
+      color: #A9A9A9;
     }
   }
 }

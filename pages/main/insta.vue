@@ -1,11 +1,14 @@
 <template>
   <div class="insta">
     <total-stat />
-    <div class="insta__posts">
+    <div v-if="posts.length" class="insta__posts">
       <post-item v-for="post in posts" :key="post.id" :data="post" />
       <button v-if="after" class="insta__posts__btn submit-btn" @click="$fetch">
         Загрузить еще
       </button>
+    </div>
+    <div v-else class="insta__empty">
+      Список пуст
     </div>
   </div>
 </template>
@@ -29,7 +32,7 @@ export default class extends Vue {
     }
 
     const response = await this.$axios.$get('/api/facebook/posts?' + require('qs').stringify(params))
-    this.posts.push(...response.posts)
+    this.posts.push(...(response.posts || []))
     this.after = response.after
   }
 }
@@ -49,6 +52,12 @@ export default class extends Vue {
     &__btn {
       grid-column: 1/4;
     }
+  }
+
+  &__empty {
+    text-align: center;
+    color: #A9A9A9;
+    font-size: 14px;
   }
 }
 </style>

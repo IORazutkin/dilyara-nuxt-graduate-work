@@ -1,5 +1,5 @@
 <template>
-  <div class="item">
+  <div v-if="data.current && data.previous" class="item">
     <div class="item__count">
       {{ data.previous[propName] | moneyFilter(true) }}
     </div>
@@ -19,7 +19,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
-import { Stat } from '~/types/Stat'
 import { WeeklyStat } from '~/types/WeeklyStat'
 
 @Component

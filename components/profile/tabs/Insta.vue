@@ -1,6 +1,6 @@
 <template>
   <div class="tab">
-    <div v-if="!$store.getters['user/getUser'].instagramUsername" class="tab__prefer">
+    <div class="tab__prefer">
       <div>
         <div class="tab__prefer__title">
           Добавьте аккаунт Instagram для начала работы

@@ -36,9 +36,10 @@ export default {
 <style lang="scss" scoped>
 .page {
   &__target {
-    height: calc(100vh - 57px);
+    min-height: calc(100vh - 57px);
     display: flex;
     align-items: center;
+    padding: 50px 0;
 
     &__wrapper {
       display: flex;

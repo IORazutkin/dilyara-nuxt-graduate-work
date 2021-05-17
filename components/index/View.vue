@@ -14,8 +14,9 @@ export default {
 <style lang="scss" scoped>
 .page {
   &__view {
-    height: calc(100vh - 57px);
+    min-height: calc(100vh - 57px);
     display: flex;
+    padding: 50px;
 
     &__image {
       width: 100%; height: 100%;
