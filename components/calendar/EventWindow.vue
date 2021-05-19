@@ -111,10 +111,12 @@ export default class extends MarkWindow {
 
   &__body {
     padding: 35px 25px;
-    position: relative;
     flex-grow: 1;
     border: 1px solid rgba(0, 0, 0, .3);
     border-top: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
     .field {
       border: 1px solid rgba(0, 0, 0, .2);
@@ -145,10 +147,10 @@ export default class extends MarkWindow {
     }
 
     &__actions {
-      position: absolute;
-      bottom: 35px; right: 25px;
+      align-self: flex-end;
       width: auto;
       display: flex;
+      margin-top: 16px;
 
       .action-btn {
         font-size: 10px;

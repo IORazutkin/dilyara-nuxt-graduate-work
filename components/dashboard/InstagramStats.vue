@@ -48,7 +48,7 @@ export default class extends Vue {
     },
     {
       title: 'Города подписчиков',
-      subItems: this.data.audience
+      subItems: this.data.audience && this.data.audience.audienceCity
         ? [
             ...Object.entries(this.data.audience.audienceCity).map(([key, value]) => ({
               title: key,
@@ -59,7 +59,7 @@ export default class extends Vue {
     },
     {
       title: 'Распределение подписчиков по возрасту и полу',
-      subItems: this.data.audience
+      subItems: this.data.audience && this.data.audience.audienceGenderAge
         ? [
             ...Object.entries(this.data.audience.audienceGenderAge).map(([key, value]) => ({
               title: key.replace('M.', 'М ').replace('F.', 'Ж '),
